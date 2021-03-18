@@ -1,9 +1,9 @@
 //============================================================================
 // Name        : compilerAssignmentPart2.cpp
-// Author      : 
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
+// Author      : Kyle Welsh
+// Version     : N/A
+// Copyright   : N/A
+// Description : The syntax analyzer portion of the compiler assignment
 //============================================================================
 
 #include <cstdlib>
@@ -110,7 +110,7 @@ bool SyntaxAnalyzer::parse(){
 
 bool SyntaxAnalyzer::vdec(){
 
-    if (*tokitr != "t_var")
+    if (tokitr!=tokens.end() && *tokitr != "t_var")	// KYLE WELSH (Adding end check)
         return true;
     else{
         tokitr++; lexitr++;
@@ -133,16 +133,16 @@ bool SyntaxAnalyzer::vdec(){
 int SyntaxAnalyzer::vars(){
     int result = 0;  // 0 - valid, 1 - done, 2 - error
     string temp;
-    if (*tokitr == "t_integer"){
+    if (tokitr!=tokens.end() && *tokitr == "t_integer"){ // KYLE WELSH (Adding end check)
         temp = "t_integer";
         tokitr++; lexitr++;
     }
-    else if (*tokitr == "t_string"){
+    else if (tokitr!=tokens.end() && *tokitr == "t_string"){ // KYLE WELSH (Adding end check)
         temp = "t_string";
         tokitr++; lexitr++;
     }
     else
-        return 1;
+        return 1;	// LOOK INTO THIS MORE / END CHECK?
     bool semihit = false;
     while (tokitr != tokens.end() && result == 0 && !semihit){
         if (*tokitr == "t_id"){
@@ -176,28 +176,28 @@ bool SyntaxAnalyzer::stmtlist(){
         return true;
 }
 int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
-	if (*tokitr == "t_if"){
+	if (tokitr!=tokens.end() && *tokitr == "t_if"){	// KYLE WELSH (Adding end check)
         tokitr++; lexitr++;
         if (ifstmt()) return 1;
         else return 0;
-    }
-    else if (*tokitr == "t_while"){
+    }	// WONT GO INTO ANY STATEMENTS IF ITS AT THE END AND THEN RETURNS 2 ??
+    else if (tokitr!=tokens.end() && *tokitr == "t_while"){	// KYLE WELSH (Adding end check)
         tokitr++; lexitr++;
         if (whilestmt()) return 1;
         else return 0;
     }
-    else if (*tokitr == "t_id"){  // assignment starts with identifier
+    else if (tokitr!=tokens.end() && *tokitr == "t_id"){  // assignment starts with identifier // KYLE WELSH (Adding end check)
         tokitr++; lexitr++;
         cout << "t_id" << endl;
         if (assignstmt()) return 1;
         else return 0;
     }
-    else if (*tokitr == "t_input"){
+    else if (tokitr!=tokens.end() && *tokitr == "t_input"){	// KYLE WELSH (Adding end check)
         tokitr++; lexitr++;
         if (inputstmt()) return 1;
         else return 0;
     }
-    else if (*tokitr == "t_output"){
+    else if (tokitr!=tokens.end() && *tokitr == "t_output"){ // KYLE WELSH (Adding end check)
         tokitr++; lexitr++;
         cout << "t_output" << endl;
         if (outputstmt()) return 1;
@@ -222,9 +222,43 @@ bool SyntaxAnalyzer::elsepart(){
     return true;   // elsepart can be null
 }
 
-bool SyntaxAnalyzer::whilestmt(){
-	return true;
-	// write this function
+bool SyntaxAnalyzer::whilestmt(){ // KYLE WELSH (FUNCTION) TO FUTURE KYLE, THIS WONT WORK YET FOR SURE, CHECK IT
+	bool error = false;
+	if (tokitr!=tokens.end() && *tokitr == "t_while"){
+		tokitr++; lexitr++;
+		if (!expr()){
+			error = true;
+		}
+		while (tokitr!=tokens.end() && expr()){
+			tokitr++; lexitr++;
+		}
+		if (tokitr!=tokens.end() && *tokitr == "t_loop"){
+			tokitr++; lexitr++;
+			if (tokitr!=tokens.end() && stmtlist){
+				tokitr++; lexitr++;
+				if (tokitr!=tokens.end() && *tokitr == "t_end"){
+					tokitr++; lexitr++;
+					if (tokitr!=tokens.end() && *tokitr == "t_loop"){
+						tokitr++; lexitr++;
+					}
+					else
+						error = true;
+				}
+				else
+					error = true;
+			}
+			else
+				error = true;
+		}
+		else
+			error = true;
+	}
+	else
+		return false;
+	if (error == false)
+		return true;
+	else
+		return false;
 }
 
 bool SyntaxAnalyzer::assignstmt(){
