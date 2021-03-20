@@ -181,23 +181,23 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
         if (ifstmt()) return 1;
         else return 0;
     }	// WONT GO INTO ANY STATEMENTS IF ITS AT THE END AND THEN RETURNS 2 ??
-    else if (tokitr!=tokens.end() && *tokitr == "t_while"){	// KYLE WELSH (Adding end check)
+    else if (tokitr!=tokens.end() && *tokitr == "t_while"){	// KYLE WELSH
         tokitr++; lexitr++;
         if (whilestmt()) return 1;
         else return 0;
     }
-    else if (tokitr!=tokens.end() && *tokitr == "t_id"){  // assignment starts with identifier // KYLE WELSH (Adding end check)
+    else if (tokitr!=tokens.end() && *tokitr == "t_id"){  // assignment starts with identifier // KYLE WELSH
         tokitr++; lexitr++;
         cout << "t_id" << endl;
         if (assignstmt()) return 1;
         else return 0;
     }
-    else if (tokitr!=tokens.end() && *tokitr == "t_input"){	// KYLE WELSH (Adding end check)
+    else if (tokitr!=tokens.end() && *tokitr == "t_input"){	// KYLE WELSH
         tokitr++; lexitr++;
         if (inputstmt()) return 1;
         else return 0;
     }
-    else if (tokitr!=tokens.end() && *tokitr == "t_output"){ // KYLE WELSH (Adding end check)
+    else if (tokitr!=tokens.end() && *tokitr == "t_output"){ // KYLE WELSH
         tokitr++; lexitr++;
         cout << "t_output" << endl;
         if (outputstmt()) return 1;
@@ -206,9 +206,39 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
     return 2;  //stmtlist can be null
 }
 
-bool SyntaxAnalyzer::ifstmt(){
+bool SyntaxAnalyzer::ifstmt(){ // CLASS WRITTEN
+	if (tokitr == tokens.end())
+		return false;
+	if (*tokitr != "s_lparen")
+		return false;
+	tokitr++; lexitr++;
+	if (!expr())
+		return false;
+	if (tokitr == tokens.end())
+		return false;
+	if (*tokitr != "s_rparen")
+		return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end())
+		return false;
+	if (*tokitr != "t_then")
+		return false;
+	tokitr++; lexitr++;
+	if (!stmtlist())
+		return false;
+	if (!elsepart())
+		return false;
+	if (tokitr == tokens.end())
+		return false;
+	if (*tokitr != "t_end")
+		return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end())
+		return false;
+	if (*tokitr != "t_if")
+		return false;
+	tokitr++; lexitr++;
 	return true;
-    // we will write this together in class
 }
 
 bool SyntaxAnalyzer::elsepart(){
@@ -222,48 +252,42 @@ bool SyntaxAnalyzer::elsepart(){
     return true;   // elsepart can be null
 }
 
-bool SyntaxAnalyzer::whilestmt(){ // KYLE WELSH (FUNCTION) TO FUTURE KYLE, THIS WONT WORK YET FOR SURE, CHECK IT
-	bool error = false;
-	if (tokitr!=tokens.end() && *tokitr == "t_while"){
-		tokitr++; lexitr++;
-		if (!expr()){
-			error = true;
-		}
-		while (tokitr!=tokens.end() && expr()){
-			tokitr++; lexitr++;
-		}
-		if (tokitr!=tokens.end() && *tokitr == "t_loop"){
-			tokitr++; lexitr++;
-			if (tokitr!=tokens.end() && stmtlist){
-				tokitr++; lexitr++;
-				if (tokitr!=tokens.end() && *tokitr == "t_end"){
-					tokitr++; lexitr++;
-					if (tokitr!=tokens.end() && *tokitr == "t_loop"){
-						tokitr++; lexitr++;
-					}
-					else
-						error = true;
-				}
-				else
-					error = true;
-			}
-			else
-				error = true;
-		}
-		else
-			error = true;
-	}
-	else
+bool SyntaxAnalyzer::whilestmt(){ // KYLE WELSH
+	if (tokitr == tokens.end() || *tokitr != "s_lparen")
 		return false;
-	if (error == false)
-		return true;
-	else
+	tokitr++; lexitr++;
+	if (!expr())
 		return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end() || *tokitr != "s_rparen")
+		return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end() || *tokitr != "t_loop")
+		return false;
+	tokitr++; lexitr++;
+	if(!stmtlist())
+		return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end() || *tokitr != "t_end")
+			return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end() || *tokitr != "t_loop")
+		return false;
+	tokitr++; lexitr++;
+	return true;
 }
 
-bool SyntaxAnalyzer::assignstmt(){
+bool SyntaxAnalyzer::assignstmt(){ // KYLE WELSH
+	if (tokitr == tokens.end() || *tokitr != "s_assign")
+		return false;
+	tokitr++; lexitr++;
+	if(!expr())
+		return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end() || *tokitr != "s_semi")
+		return false;
+	tokitr++; lexitr++;
 	return true;
-    // write this function
 }
 bool SyntaxAnalyzer::inputstmt(){
     if (*tokitr == "s_lparen"){
@@ -279,9 +303,17 @@ bool SyntaxAnalyzer::inputstmt(){
     return false;
 }
 
-bool SyntaxAnalyzer::outputstmt(){
+bool SyntaxAnalyzer::outputstmt(){ // KYLE WELSH
+	if (tokitr == tokens.end() || *tokitr != "s_lparen")
+		return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end() || (!expr() && *tokitr != "t_string"))
+		return false;
+	tokitr++; lexitr++;
+	if (tokitr == tokens.end() || *tokitr != "s_rparen")
+		return false;
+	tokitr++; lexitr++;
 	return true;
-	// write this function
 }
 
 bool SyntaxAnalyzer::expr(){
@@ -300,9 +332,20 @@ bool SyntaxAnalyzer::expr(){
     }
 }
 
-bool SyntaxAnalyzer::simpleexpr(){
-	return true;
-    // write this function
+bool SyntaxAnalyzer::simpleexpr(){ // KYLE WELSH
+	if (!term())
+		return false;
+	tokitr++; lexitr++;
+	if (arithop() || relop()){
+		tokitr++; lexitr++;
+		if(!term())
+			return false;
+	}
+	else if (tokitr == tokens.end())
+		return false;
+	else
+		tokitr++; lexitr++;
+		return true;
 }
 
 bool SyntaxAnalyzer::term(){
