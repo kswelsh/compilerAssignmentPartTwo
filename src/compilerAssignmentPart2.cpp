@@ -109,13 +109,11 @@ bool SyntaxAnalyzer::parse(){
 }
 
 bool SyntaxAnalyzer::vdec(){
-	if (tokitr!=tokens.end() && *tokitr != "t_var") // Kyle Welsh
-		return true;
-	else if (tokitr!=tokens.end() && *tokitr == "t_var"){
+	if (tokitr!=tokens.end() && *tokitr == "t_var"){ // Kyle Welsh
 	    tokitr++; lexitr++;
 	    int result = 0;   // 0 - valid, 1 - done, 2 - error
 	    result = vars();
-	    if (result == 1)
+	    if (result == 1) // Error if main on first run through
 	    	return false;
 	    else if (result == 2)
 	    	return false;
@@ -127,6 +125,16 @@ bool SyntaxAnalyzer::vdec(){
 	    else
 	        return false;
 	}
+	else if (tokitr!=tokens.end()){ // Kyle Welsh
+		if (*tokitr == "t_main")
+			return true;
+		else if (*tokitr == "") // Empty file is a 'no main' error
+			return true;
+		else
+			return false;
+	}
+	else
+		return false;
 }
 
 int SyntaxAnalyzer::vars(){
@@ -141,6 +149,8 @@ int SyntaxAnalyzer::vars(){
 		tokitr++; lexitr++;
 	}
 	else if (tokitr!=tokens.end() && *tokitr == "t_main") // Kyle Welsh
+		return 1;
+	else if (tokitr==tokens.end()) // Kyle Welsh
 		return 1;
 	else // Kyle Welsh
 		return 2;
@@ -417,7 +427,7 @@ std::istream& SyntaxAnalyzer::getline_safe(std::istream& input, std::string& out
 }
 
 int main(){
-    ifstream infile("codelexemes.txt");
+    ifstream infile("codelexemes11.txt");
     if (!infile){
     	cout << "error opening lexemes.txt file" << endl;
         exit(-1);
