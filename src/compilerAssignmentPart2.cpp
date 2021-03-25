@@ -87,14 +87,14 @@ bool SyntaxAnalyzer::parse(){
                 		}
                 	}
                 	else{
-                		cout << "ERROR: Invalid Statement Ending Code!" << endl;
+                		cout << "ERROR: Invalid 'stmtlist'!" << endl;
                 }
                 else{
                 	cout << "ERROR: No 'end'!" << endl;
                 }
             }
             else{
-            	cout << "ERROR: Bad/Non-existent 'stmtlist'!" << endl; // Kyle Welsh
+            	cout << "ERROR: Bad 'stmtlist'!" << endl; // Kyle Welsh
             }
         }
         else{
@@ -128,8 +128,10 @@ bool SyntaxAnalyzer::vdec(){
 	else if (tokitr!=tokens.end()){ // Kyle Welsh
 		if (*tokitr == "t_main")
 			return true;
-		else if (*tokitr == "") // Empty file is a 'no main' error
+		else if (*tokitr == ""){ // Empty file is a 'no main' error
+			*tokitr = "error";
 			return true;
+		}
 		else
 			return false;
 	}
@@ -200,7 +202,6 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
     }
     else if (tokitr!=tokens.end() && *tokitr == "t_id"){  // assignment starts with identifier // Kyle Welsh
         tokitr++; lexitr++;
-        cout << "t_id" << endl;
         if (assignstmt()) return 1;
         else return 0;
     }
@@ -211,14 +212,11 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
     }
     else if (tokitr!=tokens.end() && *tokitr == "t_output"){ // Kyle Welsh
         tokitr++; lexitr++;
-        cout << "t_output" << endl;
         if (outputstmt()) return 1;
         else return 0;
     }
-    else if (tokitr!=tokens.end()) // Kyle Welsh
-    	return 2;  //stmtlist can be null
     else // Kyle Welsh
-    	return 0;
+    	return 2;
 }
 
 bool SyntaxAnalyzer::ifstmt(){
@@ -266,7 +264,7 @@ bool SyntaxAnalyzer::elsepart(){
     }
     else if (tokitr!=tokens.end()) // Kyle Welsh
     	return true;   // elsepart can be null
-    else // Kyle WElsh
+    else // Kyle Welsh
     	return false;
 }
 
@@ -276,7 +274,6 @@ bool SyntaxAnalyzer::whilestmt(){ // Kyle Welsh
 	tokitr++; lexitr++;
 	if (!expr())
 		return false;
-	tokitr++; lexitr++;
 	if (tokitr == tokens.end() || *tokitr != "s_rparen")
 		return false;
 	tokitr++; lexitr++;
@@ -285,7 +282,6 @@ bool SyntaxAnalyzer::whilestmt(){ // Kyle Welsh
 	tokitr++; lexitr++;
 	if(!stmtlist())
 		return false;
-	tokitr++; lexitr++;
 	if (tokitr == tokens.end() || *tokitr != "t_end")
 			return false;
 	tokitr++; lexitr++;
@@ -299,10 +295,8 @@ bool SyntaxAnalyzer::assignstmt(){ // Kyle Welsh
 	if (tokitr == tokens.end() || *tokitr != "s_assign")
 		return false;
 	tokitr++; lexitr++;
-	cout << *tokitr << endl;
 	if(!expr())
 		return false;
-	cout << *tokitr << endl;
 	if (tokitr == tokens.end() || *tokitr != "s_semi")
 		return false;
 	tokitr++; lexitr++;
@@ -326,9 +320,11 @@ bool SyntaxAnalyzer::outputstmt(){ // Kyle Welsh
 	if (tokitr == tokens.end() || *tokitr != "s_lparen")
 		return false;
 	tokitr++; lexitr++;
-	if (tokitr == tokens.end() || (!expr() && *tokitr != "t_string"))
+	if (tokitr != tokens.end() && *tokitr == "t_string"){
+		tokitr++; lexitr++;
+	}
+	else if (!expr())
 		return false;
-	tokitr++; lexitr++;
 	if (tokitr == tokens.end() || *tokitr != "s_rparen")
 		return false;
 	tokitr++; lexitr++;
@@ -358,13 +354,11 @@ bool SyntaxAnalyzer::simpleexpr(){ // Kyle Welsh
 		if(!term())
 			return false;
 	}
-	if (tokitr == tokens.end())
-		return false;
 	return true;
 }
 
 bool SyntaxAnalyzer::term(){
-    if ((tokitr!=tokens.end()) && ((*tokitr == "t_int") || (*tokitr == "t_str") || (*tokitr == "t_id"))){ // Kyle Welsh
+    if ((tokitr!=tokens.end()) && ((*tokitr == "t_integer") || (*tokitr == "t_string") || (*tokitr == "t_id"))){ // Kyle Welsh
     	tokitr++; lexitr++;
     	return true;
     }
@@ -427,7 +421,7 @@ std::istream& SyntaxAnalyzer::getline_safe(std::istream& input, std::string& out
 }
 
 int main(){
-    ifstream infile("codelexemes11.txt");
+    ifstream infile("codelexemes.txt");
     if (!infile){
     	cout << "error opening lexemes.txt file" << endl;
         exit(-1);
