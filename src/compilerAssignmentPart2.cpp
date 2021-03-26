@@ -219,6 +219,9 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
     	return 2;
 }
 
+// pre: tokitr was already == "t_if" and then moved to the next location (tokitr++)
+// post: returns true if valid ifstmt according to grammar, false if invalid
+//		 tokitr moved to next location after ifstmt (tokitr++)
 bool SyntaxAnalyzer::ifstmt(){
 	if (tokitr == tokens.end())
 		return false;
@@ -268,6 +271,9 @@ bool SyntaxAnalyzer::elsepart(){
     	return false;
 }
 
+// pre: tokitr was already == "t_while" and then moved to the next location (tokitr++)
+// post: returns true if valid whilestmt according to grammar, false if invalid
+//		 tokitr moved to next location after whilestmt (tokitr++)
 bool SyntaxAnalyzer::whilestmt(){ // Kyle Welsh
 	if (tokitr == tokens.end() || *tokitr != "s_lparen")
 		return false;
@@ -283,7 +289,7 @@ bool SyntaxAnalyzer::whilestmt(){ // Kyle Welsh
 	if(!stmtlist())
 		return false;
 	if (tokitr == tokens.end() || *tokitr != "t_end")
-			return false;
+		return false;
 	tokitr++; lexitr++;
 	if (tokitr == tokens.end() || *tokitr != "t_loop")
 		return false;
@@ -291,6 +297,9 @@ bool SyntaxAnalyzer::whilestmt(){ // Kyle Welsh
 	return true;
 }
 
+// pre: tokitr was already == "t_id" and then moved to the next location (tokitr++)
+// post: returns true if valid assignstmt according to grammar, false if invalid
+//		 tokitr moved to next location after assignstmt (tokitr++)
 bool SyntaxAnalyzer::assignstmt(){ // Kyle Welsh
 	if (tokitr == tokens.end() || *tokitr != "s_assign")
 		return false;
@@ -316,6 +325,9 @@ bool SyntaxAnalyzer::inputstmt(){
     return false;
 }
 
+// pre: tokitr was already == "t_id" and then moved to the next location (tokitr++)
+// post: returns true if valid outputstmt according to grammar, false if invalid
+//		 tokitr moved to next location after outputstmt (tokitr++)
 bool SyntaxAnalyzer::outputstmt(){ // Kyle Welsh
 	if (tokitr == tokens.end() || *tokitr != "s_lparen")
 		return false;
@@ -347,6 +359,9 @@ bool SyntaxAnalyzer::expr(){
     }
 }
 
+// pre: n/a
+// post: returns true if valid simpleexpr according to grammar, false if invalid
+//		 tokitr moved to next location after simpleexpr (tokitr++)
 bool SyntaxAnalyzer::simpleexpr(){ // Kyle Welsh
 	if (!term())
 		return false;
