@@ -102,7 +102,7 @@ bool SyntaxAnalyzer::parse(){
         }
     }
     else{
-    	cout << "ERROR: Bad Variable List!" << endl; // Kyle Welsh
+    	// Error handled in vdec() method
     }
     return false;
 
@@ -113,17 +113,23 @@ bool SyntaxAnalyzer::vdec(){
 	    tokitr++; lexitr++;
 	    int result = 0;   // 0 - valid, 1 - done, 2 - error
 	    result = vars();
-	    if (result == 1) // Error if main on first run through
+	    if (result == 1){ // Error if main on first run through
+	    	cout << "ERROR: Bad Variable List!" << endl;
 	    	return false;
-	    else if (result == 2)
+	    }
+	    else if (result == 2){
+	    	cout << "ERROR: Bad Variable List!" << endl;
 	    	return false;
+	    }
 	    while (result == 0){
 	    	result = vars(); // parse vars
 	    }
 	    if (result == 1)
 	    	return true;
-	    else
+	    else{
+	    	cout << "ERROR: Bad Variable List!" << endl;
 	        return false;
+	    }
 	}
 	else if (tokitr!=tokens.end()){ // Kyle Welsh
 		if (*tokitr == "t_main")
@@ -132,11 +138,15 @@ bool SyntaxAnalyzer::vdec(){
 			*tokitr = "error";
 			return true;
 		}
-		else
+		else{
+			cout << "ERROR: No Main!" << endl;
 			return false;
+		}
 	}
-	else
+	else{
+		cout << "ERROR: Bad Variable List!" << endl;
 		return false;
+	}
 }
 
 int SyntaxAnalyzer::vars(){
