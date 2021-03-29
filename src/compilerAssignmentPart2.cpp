@@ -61,7 +61,6 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream& infile){
         pos = line.find(":");
         tok = line.substr(0, pos);
         lex = line.substr(pos+1, line.length());
-        cout << pos << " " << tok << " " << lex << endl;
         tokens.push_back(tok);
         lexemes.push_back(lex);
         getline_safe(infile, line);
@@ -102,7 +101,7 @@ bool SyntaxAnalyzer::parse(){
         }
     }
     else{
-    	// Error handled in vdec() method
+    	// Error handled in vdec() method // Kyle Welsh
     }
     return false;
 
@@ -113,7 +112,7 @@ bool SyntaxAnalyzer::vdec(){
 	    tokitr++; lexitr++;
 	    int result = 0;   // 0 - valid, 1 - done, 2 - error
 	    result = vars();
-	    if (result == 1){ // Error if main on first run through
+	    if (result == 1){ // error if main on first run through
 	    	cout << "ERROR: Bad Variable List!" << endl;
 	    	return false;
 	    }
@@ -134,7 +133,7 @@ bool SyntaxAnalyzer::vdec(){
 	else if (tokitr!=tokens.end()){ // Kyle Welsh
 		if (*tokitr == "t_main")
 			return true;
-		else if (*tokitr == ""){ // Empty file is a 'no main' error
+		else if (*tokitr == ""){ // empty file is a 'no main' error
 			*tokitr = "error";
 			return true;
 		}
