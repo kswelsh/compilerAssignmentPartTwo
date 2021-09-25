@@ -1,6 +1,14 @@
-# compilerAssignmentPartTwo
+<h1 align="center">Compiler Part Two</h1>
+<p align="center">The Syntax Analyzer</p>
 
-This assignment consists of developing the second step of a compiler; the syntax analyzer.  
-The syntax analyzer was based on a specific grammar given to us in CSCE 306 at North Central College.
+## Features
+:computer: Vectors <br />
+:computer: File Streams <br />
+:computer: Compiler Design <br />
+:computer: Modularized Programming <br />
 
-Kyle Welsh
+## Purpose
+The purpose of this project is to showcase the 'second step' the compiler performs; a syntax check.
+This project was developed as an assignment at North Central College and some of the code was given to us.
+We were required to fix the code that was broken, as well as add new code for certain functions. All of my edits
+are marked with comments of my name.
